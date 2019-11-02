@@ -2,28 +2,60 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+const AWS = require('aws-sdk');
+AWS.config.update({
+  accessKeyId: process.env.AWSAccessKeyID,
+  secretAccessKey: process.env.AWSSecretAccessKey
+});
+s3 = new AWS.S3();
+
+
 
 module.exports = (query) => {
+
+  router.get("/files", (req, res) => {
+    query.getFiles()
+      .then(files => res.json(files))
+  });
+
   router.get("/users", (req, res) => {
     query.getUsers()
       .then(users => res.json(users))
   });
 
-  router.put("/users/new", (req, res) => {
+  router.put("/users/register", (req, res) => {
     const name = req.body.name
     const email = req.body.email
-    bcrypt.hash(req.body.password, saltRounds, function (err, hashedPassword) {
-      if (err) {
-        console.log(err);
-      }
-      else {
-        req.body.password = hashedPassword;
-        query.createUser(name, email, hashedPassword)
-          .then(user => res.json(user))
-          .catch(error => console.log(error));
-      }
-    })
-
+    query.getUserByEmail(email)
+      .then(user => {
+        if (!user) {
+          bcrypt.hash(req.body.password, saltRounds, function (err, hashedPassword) {
+            if (err) {
+              console.log(err);
+            }
+            else {
+              req.body.password = hashedPassword;
+              let params = {
+                Bucket: process.env.AWSS3_BUCKET,
+                Key: email + '/'
+              };
+              s3.putObject(params, function (err, data) {
+                if (err) console.log(err, err.stack); // an error occurred
+                else console.log(data);           // successful response
+              });
+              query.createUser(name, email, hashedPassword)
+                .then(user => {
+                  query.createUserFile(email, user[0].id)
+                    .then(res.json(user))
+                })
+                .catch(error => console.log(error));
+            }
+          })
+        }
+        else {
+          res.send(`${user.email} is already registered :)`);
+        }
+      })
   });
 
   return router
