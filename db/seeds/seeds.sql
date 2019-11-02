@@ -7,12 +7,12 @@ VALUES
   ('Russell McWhae', 'The best in town', 'r.mcwhae@nomail.com', '12345678');
 
 INSERT INTO users
-  (name, email, password, acct_id)
+  (name, email, password)
 VALUES
-  ('Ahmed Murad', 'a.murad@nomail.com', '12345678', 2),
-  ('Lucas Wilson', 'l.wilson@nomail.com', '12345678', 3),
-  ('Amanda Shalansky', 'a.shalansky@nomail.com', '12345678', 1),
-  ('Russell McWhae', 'r.mcwhae@nomail.com', '12345678', 4);
+  ('Ahmed Murad', 'a.murad@nomail.com', '12345678'),
+  ('Lucas Wilson', 'l.wilson@nomail.com', '12345678'),
+  ('Amanda Shalansky', 'a.shalansky@nomail.com', '12345678'),
+  ('Russell McWhae', 'r.mcwhae@nomail.com', '12345678');
 
 INSERT INTO files
   (name, user_id)
