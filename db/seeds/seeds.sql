@@ -21,10 +21,10 @@ VALUES
   ('2', 2);
 
   INSERT INTO category
-  (file_id, acct_id, user_id)
+  (name, file_id, acct_id, user_id)
 VALUES
-  (1, 3, 1),
-  (2, 4, 2);
+  ('personal', 1, 3, 1),
+  ('company', 2, 4, 2);
 
   INSERT INTO reciepts
   (upload_date, purchase_date, category_id)
