@@ -28,6 +28,11 @@ module.exports = (query) => {
       .then(categories => res.json(categories))
   });
 
+  router.get("/user/categories", (req, res) => {
+    query.getCategoriesByUserEmail(req.body.email)
+      .then(categories => res.json(categories))
+  });
+
   router.put("/users/create/category", (req, res) => {
     const categoryName = req.body.name
     const email = req.body.email
