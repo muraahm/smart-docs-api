@@ -34,18 +34,26 @@ module.exports = (query) => {
     const acct_id = req.body.acct_id
     query.getFilesByUserEmail(email)
       .then(file => {
-        let params = {
-          Bucket: process.env.AWSS3_BUCKET,
-          Key: email + '/' + categoryName + '/'
-        };
-        s3.putObject(params, function (err, data) {
-          if (err) console.log(err, err.stack); // an error occurred
-          else console.log(data);           // successful response
-        });
+        query.getCategoryByNameAndUserID(categoryName, file[0].user_id)
+          .then(category => {
+            if (!category[0]) {
+              query.createCategory(categoryName, file[0].id, acct_id, file[0].user_id)
+                .then(category => res.json(category))
+                .catch(error => console.log(error));
 
-        query.createCategory(categoryName, file[0].id, acct_id, file[0].user_id)
-          .then(category => res.json(category))
-          .catch(error => console.log(error));
+              let params = {
+                Bucket: process.env.AWSS3_BUCKET,
+                Key: email + '/' + categoryName + '/'
+              };
+              s3.putObject(params, function (err, data) {
+                if (err) console.log(err, err.stack); // an error occurred
+                else console.log(data);           // successful response
+              });
+            }
+            else {
+              res.send(`${categoryName} is already created :)`);
+            }
+          })
       })
       .catch(error => console.log(error));
   })

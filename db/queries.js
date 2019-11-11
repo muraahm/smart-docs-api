@@ -17,6 +17,15 @@ module.exports = db => ({
       .catch(error => console.log(error));
   },
 
+  getCategoryByNameAndUserID(categoryName, user_id) {
+    return db.query(
+      `SELECT * FROM category
+      WHERE name = $1 AND user_id = $2;`, [categoryName, user_id]
+    )
+      .then(({ rows: category }) => category)
+      .catch(error => console.log(error));
+  },
+
   getCategories() {
     return db.query(
       `SELECT * FROM category`
