@@ -23,6 +23,24 @@ module.exports = (query) => {
       .then(users => res.json(users))
   });
 
+  router.get("/categories", (req, res) => {
+    query.getCategories()
+      .then(categories => res.json(categories))
+  });
+
+  router.put("/users/create/category", (req, res) => {
+    const categoryName = req.body.name
+    const email = req.body.email
+    const acct_id = req.body.acct_id
+    query.getFilesByUserEmail(email)
+      .then(file => {
+        query.createCategory(categoryName, file[0].id, acct_id, file[0].user_id)
+          .then(category => res.json(category))
+          .catch(error => console.log(error));
+      })
+      .catch(error => console.log(error));
+  })
+
   router.put("/users/register", (req, res) => {
     const name = req.body.name
     const email = req.body.email
