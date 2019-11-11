@@ -17,8 +17,8 @@ VALUES
 INSERT INTO files
   (name, user_id)
 VALUES
-  ('1', 1),
-  ('2', 2);
+  ('a.murad@nomail.com', 1),
+  ('l.wilson@nomail.com', 2);
 
   INSERT INTO category
   (name, file_id, acct_id, user_id)

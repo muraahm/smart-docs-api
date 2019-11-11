@@ -1,5 +1,30 @@
 module.exports = db => ({
 
+  createCategory(name, file_id, acct_id, user_id) {
+    // console.log(name, file_id, acct_id, user_id)
+    return db.query(
+      `INSERT INTO "category"
+    (name, file_id, acct_id, user_id)
+    VALUES ($1, $2, $3, $4)
+    RETURNING *;`, [
+      name,
+      file_id,
+      acct_id,
+      user_id
+      ]
+    )
+      .then(({ rows: category }) => category[0])
+      .catch(error => console.log(error));
+  },
+
+  getCategories() {
+    return db.query(
+      `SELECT * FROM category`
+    )
+      .then(({ rows: categories }) => categories)
+      .catch(error => console.log(error));
+  },
+
   getFiles() {
     return db.query(
       `SELECT * FROM files`
@@ -8,10 +33,21 @@ module.exports = db => ({
       .catch(error => console.log(error));
   },
 
+  getFilesByUserEmail(email) {
+    return db.query(
+      `SELECT * FROM files WHERE name = $1`, [
+      email
+    ]
+    )
+      .then(({ rows: files }) => files)
+      .catch(error => console.log(error));
+  },
+
   getUserByEmail(email) {
     return db.query(
       `SELECT * FROM users WHERE email = $1`, [
-      email]
+      email
+    ]
     )
       .then(({ rows }) => rows[0])
       .catch(error => console.log(error));
