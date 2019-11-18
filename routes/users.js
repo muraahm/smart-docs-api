@@ -9,6 +9,8 @@ AWS.config.update({
 });
 s3 = new AWS.S3();
 
+let Busboy = require('busboy');
+
 
 
 module.exports = (query) => {
@@ -33,9 +35,49 @@ module.exports = (query) => {
       .then(categories => res.json(categories))
   });
 
-  router.get("/user/categories", (req, res) => {
-    query.getCategoriesByUserEmail(req.body.email)
-      .then(categories => res.json(categories))
+  router.put("/user/category/upload", (req, res) => {
+    query.getCategoryIdByNameAndUserEmail(req.body.categoryname, req.body.email)
+      .then(id =>
+        query.uploadReciept(
+          req.body.upload_date,
+          req.body.purchase_date,
+          id,
+          req.body.user_id)
+      )
+
+    const file = (req.body.imageUpload);
+    const busboy = new Busboy({
+      headers: req.headers
+    });
+
+    busboy.on('finish', function () {
+      console.log('Upload finished');
+      console.log(file);
+      uploadToS3(file);
+    });
+    req.pipe(busboy);
+
+    function uploadToS3(file) {
+      const folder = (req.body.email + req.body.categoryname + "/");
+      const params = {
+        Bucket: process.env.AWSS3_BUCKET,
+        Key: req.body.upload_date,
+        ACL: 'public-read',
+        Body: file
+      };
+      console.log("Folder name: " + folder);
+      console.log("File: " + file)
+
+      s3.putObject(params, function (err, data) {
+        if (err) {
+          console.log("Error: ", err);
+        } else {
+          console.log(data);
+        }
+      });
+      res.redirect("/feed");
+    }
+
   });
 
   router.put("/users/create/category", (req, res) => {
