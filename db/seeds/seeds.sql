@@ -27,7 +27,7 @@ VALUES
   ('company', 2, 4, 2);
 
   INSERT INTO reciepts
-  (upload_date, purchase_date, category_id)
+  (upload_date, purchase_date, category_id, user_id)
 VALUES
-  ('Oct. 12, 2019', 'Oct. 12, 2019', 1),
-  ('Oct. 15, 2019', 'Oct. 15, 2019', 2);
+  ('Oct. 12, 2019', 'Oct. 12, 2019', 1, 1),
+  ('Oct. 15, 2019', 'Oct. 15, 2019', 2, 1);
