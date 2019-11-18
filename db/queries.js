@@ -11,7 +11,7 @@ module.exports = db => ({
       file_id,
       acct_id,
       user_id
-      ]
+    ]
     )
       .then(({ rows: category }) => category[0])
       .catch(error => console.log(error));
@@ -24,6 +24,34 @@ module.exports = db => ({
       WHERE users.email = $1;`, [email]
     )
       .then(({ rows: categories }) => categories)
+      .catch(error => console.log(error));
+  },
+
+  uploadReciept(upload_date, purchase_date, category_id, user_id) {
+    return db.query(
+      `INSERT INTO "reciepts"
+    (upload_date, purchase_date, category_id, user_id)
+    VALUES ($1, $2, $3, $4)
+    RETURNING *;
+    `, [
+      upload_date,
+      purchase_date,
+      category_id,
+      user_id
+    ]
+    )
+      .then(({ rows: reciept }) => reciept)
+      .catch(error => console.log(error));
+
+  },
+
+  getCategoryIdByNameAndUserEmail(name, email) {
+    return db.query(
+      `SELECT category.id FROM category
+      JOIN users ON users.id = user_id
+      WHERE category.name = $1 AND users.email = $2;`, [name, email]
+    )
+      .then(({ rows: id }) => id[0].id)
       .catch(error => console.log(error));
   },
 
