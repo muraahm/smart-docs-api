@@ -36,48 +36,42 @@ module.exports = (query) => {
   });
 
   router.put("/user/category/upload", (req, res) => {
+    let newDate = new Date
+    let curr_date = newDate.getDate();
+    let curr_month = newDate.getMonth() + 1; //Months are zero based
+    let curr_year = newDate.getFullYear();
+    let m_names = ["Jan", "Feb", "Mar",
+      "Apr", "May", "Jun", "Jul", "Aug", "Sept",
+      "Oct", "Nov", "Dec"];
+    const upload_date = m_names[curr_month - 1] + "." + curr_date + "," + curr_year +  "_" + newDate.getTime() 
+
     query.getCategoryIdByNameAndUserEmail(req.body.categoryname, req.body.email)
       .then(id =>
         query.uploadReciept(
-          req.body.upload_date,
+          upload_date,
           req.body.purchase_date,
           id,
           req.body.user_id)
       )
 
-    const file = (req.body.imageUpload);
-    const busboy = new Busboy({
-      headers: req.headers
-    });
-
-    busboy.on('finish', function () {
-      console.log('Upload finished');
-      console.log(file);
-      uploadToS3(file);
-    });
-    req.pipe(busboy);
-
-    function uploadToS3(file) {
-      const folder = (req.body.email + req.body.categoryname + "/");
-      const params = {
-        Bucket: process.env.AWSS3_BUCKET,
-        Key: req.body.upload_date,
-        ACL: 'public-read',
-        Body: file
-      };
-      console.log("Folder name: " + folder);
-      console.log("File: " + file)
-
-      s3.putObject(params, function (err, data) {
-        if (err) {
-          console.log("Error: ", err);
-        } else {
-          console.log(data);
-        }
-      });
-      res.redirect("/feed");
-    }
-
+      busboy = new Busboy({ headers: req.headers });
+      busboy.on('finish', function() {
+        // console.log('Upload finished');
+        // files are stored in req.files. In this case
+        // Grabs file object from the request.
+        const file = req.files.imageUpload;
+        // console.log(file);
+        let params = {
+          Bucket: process.env.AWSS3_BUCKET,
+          Key: req.body.email + '/' + req.body.categoryname + '/' + upload_date + '.jpg',
+          Body: file.data
+        };
+        s3.putObject(params, function (err, data) {
+          if (err) console.log(err, err.stack); // an error occurred
+          // else console.log(data);           // successful response
+        });
+       });
+       req.pipe(busboy);
   });
 
   router.put("/users/create/category", (req, res) => {
