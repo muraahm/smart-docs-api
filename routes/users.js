@@ -20,6 +20,11 @@ module.exports = (query) => {
       .then(files => res.json(files))
   });
 
+  router.get("/files", (req, res) => {
+    query.getFiles()
+      .then(files => res.json(files))
+  });
+
   router.get("/users", (req, res) => {
     query.getUsers()
       .then(users => res.json(users))
