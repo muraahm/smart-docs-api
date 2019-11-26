@@ -48,7 +48,7 @@ module.exports = (query) => {
     let m_names = ["Jan", "Feb", "Mar",
       "Apr", "May", "Jun", "Jul", "Aug", "Sept",
       "Oct", "Nov", "Dec"];
-    const upload_date = m_names[curr_month - 1] + "." + curr_date + "," + curr_year +  "_" + newDate.getTime() 
+    const upload_date = m_names[curr_month - 1] + "." + curr_date + "," + curr_year + "_" + newDate.getTime()
 
     query.getCategoryIdByNameAndUserEmail(req.body.categoryname, req.body.email)
       .then(id =>
@@ -59,24 +59,24 @@ module.exports = (query) => {
           req.body.user_id)
       )
 
-      busboy = new Busboy({ headers: req.headers });
-      busboy.on('finish', function() {
-        // console.log('Upload finished');
-        // files are stored in req.files. In this case
-        // Grabs file object from the request.
-        const file = req.files.imageUpload;
-        // console.log(file);
-        let params = {
-          Bucket: process.env.AWSS3_BUCKET,
-          Key: req.body.email + '/' + req.body.categoryname + '/' + upload_date + '.jpg',
-          Body: file.data
-        };
-        s3.putObject(params, function (err, data) {
-          if (err) console.log(err, err.stack); // an error occurred
-          // else console.log(data);           // successful response
-        });
-       });
-       req.pipe(busboy);
+    busboy = new Busboy({ headers: req.headers });
+    busboy.on('finish', function () {
+      // console.log('Upload finished');
+      // files are stored in req.files. In this case
+      // Grabs file object from the request.
+      const file = req.files.imageUpload;
+      // console.log(file);
+      let params = {
+        Bucket: process.env.AWSS3_BUCKET,
+        Key: req.body.email + '/' + req.body.categoryname + '/' + upload_date + '.jpg',
+        Body: file.data
+      };
+      s3.putObject(params, function (err, data) {
+        if (err) console.log(err, err.stack); // an error occurred
+        // else console.log(data);           // successful response
+      });
+    });
+    req.pipe(busboy);
   });
 
   router.put("/users/create/category", (req, res) => {
@@ -142,6 +142,34 @@ module.exports = (query) => {
           res.send(`${user.email} is already registered :)`);
         }
       })
+  });
+
+  const checkPassword = function (email, password) {
+    return (query.getUserByEmail(email))
+      .then(user => {
+
+        if (user !== null) {
+          if (bcrypt.compareSync(password, user.password)) {
+            return user
+          }
+        } else {
+          return null;
+        }
+      })
+      .catch(error => console.log(error));
+  };
+
+  router.post("/login", (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+    checkPassword(email, password)
+      .then(user => {
+        if (!user) { res.send(`${email} is not registered :)`) }
+        if (user) {
+          res.json(user, categories)
+        }
+      }
+      )
   });
 
   return router
