@@ -174,3 +174,4 @@ module.exports = (query) => {
 
   return router
 }
+
