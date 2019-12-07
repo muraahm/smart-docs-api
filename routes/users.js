@@ -11,6 +11,8 @@ s3 = new AWS.S3();
 
 let Busboy = require('busboy');
 
+const jwt = require('jsonwebtoken')
+
 
 
 module.exports = (query) => {
@@ -132,7 +134,9 @@ module.exports = (query) => {
               query.createUser(name, email, hashedPassword)
                 .then(user => {
                   query.createUserFile(email, user[0].id)
-                    .then(res.json(user))
+                    .then(jwt.sign({ user }, 'secretkey', (err, token) => {
+                      res.json({ user: user[0], token })
+                    }))
                 })
                 .catch(error => console.log(error));
             }
