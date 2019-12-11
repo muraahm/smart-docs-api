@@ -170,7 +170,13 @@ module.exports = (query) => {
       .then(user => {
         if (!user) { res.send(`${email} is not registered :)`) }
         if (user) {
-          res.json(user, categories)
+          query.getCategoriesByUserEmail(user.email)
+            .then(categories => {
+              jwt.sign({ user }, 'secretkey', (err, token) => {
+                res.json({ user, categories, token })
+              })
+            })
+
         }
       }
       )
