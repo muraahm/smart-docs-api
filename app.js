@@ -5,10 +5,13 @@ const logger = require('morgan');
 const PORT = process.env.PORT || 3002;
 const http = require('http');
 const db = require("./db");
+var cors = require('cors');
 const app = express();
 server = http.createServer(app)
 const query = require("./db/queries")(db)
 const bodyParser = require('body-Parser')
+
+app.use(cors());
 
 
 const busboy = require('connect-busboy');

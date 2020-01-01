@@ -90,6 +90,15 @@ module.exports = db => ({
       .catch(error => console.log(error));
   },
 
+  getAcctIdByCompany(company) {
+    return db.query(
+      `SELECT id FROM accountants WHERE company = $1`, [
+      company
+    ])
+      .then(({ rows }) => rows[0])
+      .catch(error => console.log(error));
+  },
+
   getUserByEmail(email) {
     return db.query(
       `SELECT * FROM users WHERE email = $1`, [

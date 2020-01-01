@@ -27,6 +27,11 @@ module.exports = (query) => {
       .then(files => res.json(files))
   });
 
+  router.get("/user/categories/list/:email", (req, res) => {
+    query.getCategoriesByUserEmail(req.params.email)
+      .then(categories => res.json(categories))
+  });
+
   router.get("/users", (req, res) => {
     query.getUsers()
       .then(users => res.json(users))
@@ -37,10 +42,7 @@ module.exports = (query) => {
       .then(categories => res.json(categories))
   });
 
-  router.get("/user/categories", (req, res) => {
-    query.getCategoriesByUserEmail(req.body.email)
-      .then(categories => res.json(categories))
-  });
+
 
   router.put("/user/category/upload", (req, res) => {
     let newDate = new Date
@@ -77,6 +79,7 @@ module.exports = (query) => {
         if (err) console.log(err, err.stack); // an error occurred
         // else console.log(data);           // successful response
       });
+      s3.getObject(key, bucket);
     });
     req.pipe(busboy);
   });
@@ -84,13 +87,14 @@ module.exports = (query) => {
   router.put("/users/create/category", (req, res) => {
     const categoryName = req.body.name
     const email = req.body.email
-    const acct_id = req.body.acct_id
+    const acct_company = req.body.acct_company
     query.getFilesByUserEmail(email)
       .then(file => {
         query.getCategoryByNameAndUserID(categoryName, file[0].user_id)
           .then(category => {
             if (!category[0]) {
-              query.createCategory(categoryName, file[0].id, acct_id, file[0].user_id)
+              query.getAcctIdByCompany(acct_id =>
+                query.createCategory(categoryName, file[0].id, acct_id, file[0].user_id))
                 .then(category => res.json(category))
                 .catch(error => console.log(error));
 
@@ -173,7 +177,7 @@ module.exports = (query) => {
           query.getCategoriesByUserEmail(user.email)
             .then(categories => {
               jwt.sign({ user }, 'secretkey', (err, token) => {
-                res.json({ user, categories, token })
+                res.json({ id: user.id, name: user.name, email: user.email, token })
               })
             })
 
