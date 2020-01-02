@@ -27,7 +27,7 @@ module.exports = db => ({
 
   getCategoriesByUserEmail(email) {
     return db.query(
-      `SELECT category.id ,category.name, accountants.name AS accountant_name FROM category
+      `SELECT category.id ,category.name, accountants.company AS accountant_company FROM category
       JOIN users ON users.id = user_id
       JOIN accountants ON accountants.id = acct_id
       WHERE users.email = $1;`, [email]
