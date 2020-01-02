@@ -35,14 +35,6 @@ module.exports = (query) => {
 
 
   router.put("/user/category/upload", (req, res) => {
-    let newDate = new Date
-    let curr_date = newDate.getDate();
-    let curr_month = newDate.getMonth() + 1; //Months are zero based
-    let curr_year = newDate.getFullYear();
-    let m_names = ["Jan", "Feb", "Mar",
-      "Apr", "May", "Jun", "Jul", "Aug", "Sept",
-      "Oct", "Nov", "Dec"];
-    const upload_date = m_names[curr_month - 1] + "." + curr_date + "," + curr_year + "_" + newDate.getTime()
 
     query.getCategoryIdByNameAndUserEmail(req.body.categoryname, req.body.email)
       .then(id =>
@@ -52,22 +44,6 @@ module.exports = (query) => {
           id,
           req.body.user_id)
       )
-
-    busboy = new Busboy({ headers: req.headers });
-    busboy.on('finish', function () {
-      const file = req.files.imageUpload;
-      let params = {
-        Bucket: process.env.AWSS3_BUCKET,
-        Key: req.body.email + '/' + req.body.categoryname + '/' + upload_date + '.jpg',
-        Body: file.data
-      };
-      s3.putObject(params, function (err, data) {
-        if (err) console.log(err, err.stack); // an error occurred
-        // else console.log(data);           // successful response
-      });
-      s3.getObject(key, bucket);
-    });
-    req.pipe(busboy);
   });
 
   router.put("/users/create/category", (req, res) => {
