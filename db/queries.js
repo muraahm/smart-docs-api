@@ -1,7 +1,7 @@
 module.exports = db => ({
 
   createCategory(name, file_id, acct_id, user_id) {
-    // console.log(name, file_id, acct_id, user_id)
+    console.log(name, file_id, acct_id, user_id)
     return db.query(
       `INSERT INTO "category"
     (name, file_id, acct_id, user_id)
@@ -17,10 +17,19 @@ module.exports = db => ({
       .catch(error => console.log(error));
   },
 
+  getAccountants() {
+    return db.query(
+      `SELECT * FROM accountants`
+    )
+      .then(({ rows: categories }) => categories)
+      .catch(error => console.log(error));
+  },
+
   getCategoriesByUserEmail(email) {
     return db.query(
-      `SELECT * FROM category
+      `SELECT category.id ,category.name, accountants.name AS accountant_name FROM category
       JOIN users ON users.id = user_id
+      JOIN accountants ON accountants.id = acct_id
       WHERE users.email = $1;`, [email]
     )
       .then(({ rows: categories }) => categories)

@@ -17,31 +17,21 @@ const jwt = require('jsonwebtoken')
 
 module.exports = (query) => {
 
-  router.get("/files", (req, res) => {
-    query.getFiles()
-      .then(files => res.json(files))
+  router.get("/accountants", (req, res) => {
+    query.getAccountants()
+      .then(accountants => res.json(accountants))
   });
 
-  router.get("/files", (req, res) => {
-    query.getFiles()
-      .then(files => res.json(files))
+  router.get("/user", (req, res) => {
+    query.getAccountants()
+      .then(accountants => res.json(accountants))
   });
+
 
   router.get("/user/categories/list/:email", (req, res) => {
     query.getCategoriesByUserEmail(req.params.email)
       .then(categories => res.json(categories))
   });
-
-  router.get("/users", (req, res) => {
-    query.getUsers()
-      .then(users => res.json(users))
-  });
-
-  router.get("/categories", (req, res) => {
-    query.getCategories()
-      .then(categories => res.json(categories))
-  });
-
 
 
   router.put("/user/category/upload", (req, res) => {
@@ -65,11 +55,7 @@ module.exports = (query) => {
 
     busboy = new Busboy({ headers: req.headers });
     busboy.on('finish', function () {
-      // console.log('Upload finished');
-      // files are stored in req.files. In this case
-      // Grabs file object from the request.
       const file = req.files.imageUpload;
-      // console.log(file);
       let params = {
         Bucket: process.env.AWSS3_BUCKET,
         Key: req.body.email + '/' + req.body.categoryname + '/' + upload_date + '.jpg',
@@ -93,11 +79,10 @@ module.exports = (query) => {
         query.getCategoryByNameAndUserID(categoryName, file[0].user_id)
           .then(category => {
             if (!category[0]) {
-              query.getAcctIdByCompany(acct_id =>
-                query.createCategory(categoryName, file[0].id, acct_id, file[0].user_id))
-                .then(category => res.json(category))
-                .catch(error => console.log(error));
-
+              query.getAcctIdByCompany(acct_company)
+                .then(acct_id => query.createCategory(categoryName, file[0].id, acct_id.id, file[0].user_id)
+                  .then(category => res.json(category))
+                  .catch(error => console.log(error)));
               let params = {
                 Bucket: process.env.AWSS3_BUCKET,
                 Key: email + '/' + categoryName + '/'
@@ -138,9 +123,10 @@ module.exports = (query) => {
               query.createUser(name, email, hashedPassword)
                 .then(user => {
                   query.createUserFile(email, user[0].id)
-                    .then(jwt.sign({ user }, 'secretkey', (err, token) => {
-                      res.json({ user: user[0], token })
-                    }))
+                    .then(jwt.sign({ id: user[0].id, name: name, email: email },
+                      'secretkey', { expiresIn: 1800 }, (err, token) => { //generate token and expires in 30min
+                        res.json({ id: user[0].id, name: name, email: email, token: token })
+                      }))
                 })
                 .catch(error => console.log(error));
             }
@@ -167,6 +153,19 @@ module.exports = (query) => {
       .catch(error => console.log(error));
   };
 
+  router.post('/user', function (req, res) {
+    var token = req.body.token;
+    if (!token) return res.status(401).send({ auth: false, message: 'No token provided.' });
+    jwt.verify(token, 'secretkey', function (err, decoded) {
+      if (err) return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
+      query.getCategoriesByUserEmail(decoded.email)
+        .then(categories => {
+          const userInfo = { id: decoded.id, name: decoded.name, email: decoded.email }
+          res.json({ userInfo, categories })
+        })
+    });
+  });
+
   router.post("/login", (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
@@ -176,9 +175,10 @@ module.exports = (query) => {
         if (user) {
           query.getCategoriesByUserEmail(user.email)
             .then(categories => {
-              jwt.sign({ user }, 'secretkey', (err, token) => {
-                res.json({ id: user.id, name: user.name, email: user.email, token })
-              })
+              jwt.sign({ id: user.id, name: user.name, email: user.email },
+                'secretkey', { expiresIn: 1800 }, (err, token) => { //generate token and expires in 30min
+                  res.json({ id: user.id, name: user.name, email: user.email, token })
+                })
             })
 
         }
