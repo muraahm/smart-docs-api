@@ -36,17 +36,43 @@ module.exports = db => ({
       .catch(error => console.log(error));
   },
 
-  uploadReciept(upload_date, purchase_date, category_id, user_id) {
+  getUserReciepts(categoryId, userId) {
+    return db.query(
+      `SELECT * FROM reciepts
+      WHERE category_id = $1 AND user_id = $2;`, [categoryId, userId]
+    )
+      .then(({ rows: reciepts }) => reciepts)
+      .catch(error => console.log(error));
+
+  },
+
+  changeAccountant(id, categoryId) {
+    return db.query(
+      `UPDATE "category"
+    SET acct_id = $1
+    WHERE category.id = $2
+    RETURNING *;
+    `, [
+      id,
+      categoryId
+    ]
+    )
+      .then(({ rows: category }) => category)
+      .catch(error => console.log(error));
+
+  },
+
+  uploadReciept(uploadDate, photoName, categoryId, userId) {
     return db.query(
       `INSERT INTO "reciepts"
-    (upload_date, purchase_date, category_id, user_id)
+    (upload_date, name, category_id, user_id)
     VALUES ($1, $2, $3, $4)
     RETURNING *;
     `, [
-      upload_date,
-      purchase_date,
-      category_id,
-      user_id
+      uploadDate,
+      photoName,
+      categoryId,
+      userId
     ]
     )
       .then(({ rows: reciept }) => reciept)
