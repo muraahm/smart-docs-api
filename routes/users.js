@@ -34,17 +34,34 @@ module.exports = (query) => {
   });
 
 
-  router.put("/user/category/upload", (req, res) => {
+  router.post("/user/reciept/upload", (req, res) => {
+    query.uploadReciept(
+      req.body.uploadDate,
+      req.body.photoName,
+      req.body.categoryId,
+      req.body.userId)
+      .then(reciept => res.json(reciept[0]))
+  });
 
-    query.getCategoryIdByNameAndUserEmail(req.body.categoryname, req.body.email)
-      .then(id =>
-        query.uploadReciept(
-          upload_date,
-          req.body.purchase_date,
-          id,
-          req.body.user_id)
+  router.post("/user/reciepts", (req, res) => {
+    query.getUserReciepts(req.body.categoryId, req.body.userId)
+      .then(reciepts => res.json(reciepts)
       )
   });
+
+
+  router.post("/user/change/accountnat", (req, res) => {
+    query.getAcctIdByCompany(req.body.accountant)
+      .then(id => {
+        console.log(id)
+        query.changeAccountant(id, req.body.categoryId)
+          .then(reciepts => console.log(reciepts)
+          )
+      })
+
+  });
+
+
 
   router.put("/users/create/category", (req, res) => {
     const categoryName = req.body.name
@@ -55,18 +72,23 @@ module.exports = (query) => {
         query.getCategoryByNameAndUserID(categoryName, file[0].user_id)
           .then(category => {
             if (!category[0]) {
-              query.getAcctIdByCompany(acct_company)
-                .then(acct_id => query.createCategory(categoryName, file[0].id, acct_id.id, file[0].user_id)
-                  .then(category => res.json(category))
-                  .catch(error => console.log(error)));
-              let params = {
-                Bucket: process.env.AWSS3_BUCKET,
-                Key: email + '/' + categoryName + '/'
-              };
-              s3.putObject(params, function (err, data) {
-                if (err) console.log(err, err.stack); // an error occurred
-                else console.log(data);           // successful response
-              });
+              if (acct_company) {
+                query.getAcctIdByCompany(acct_company)
+                  .then(acct_id => {
+                    query.createCategory(categoryName, file[0].id, acct_id.id, file[0].user_id)
+                      .then(category => res.json(category))
+                      .catch(error => console.log(error))
+                  });
+
+                let params = {
+                  Bucket: process.env.AWSS3_BUCKET,
+                  Key: email + '/' + categoryName + '/'
+                };
+                s3.putObject(params, function (err, data) {
+                  if (err) console.log(err, err.stack); // an error occurred
+                  else console.log(data);           // successful response
+                });
+              }
             }
             else {
               res.send(`${categoryName} is already created :)`);
@@ -88,21 +110,22 @@ module.exports = (query) => {
             }
             else {
               req.body.password = hashedPassword;
-              let params = {
-                Bucket: process.env.AWSS3_BUCKET,
-                Key: email + '/'
-              };
-              s3.putObject(params, function (err, data) {
-                if (err) console.log(err, err.stack); // an error occurred
-                else console.log(data);           // successful response
-              });
               query.createUser(name, email, hashedPassword)
                 .then(user => {
                   query.createUserFile(email, user[0].id)
                     .then(jwt.sign({ id: user[0].id, name: name, email: email },
                       'secretkey', { expiresIn: 1800 }, (err, token) => { //generate token and expires in 30min
                         res.json({ id: user[0].id, name: name, email: email, token: token })
+                        let params = {
+                          Bucket: process.env.AWSS3_BUCKET,
+                          Key: email + '/'
+                        };
+                        s3.putObject(params, function (err, data) {
+                          if (err) console.log(err, err.stack); // an error occurred
+                          else console.log(data);           // successful response
+                        });
                       }))
+
                 })
                 .catch(error => console.log(error));
             }
