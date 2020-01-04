@@ -38,7 +38,7 @@ CREATE TABLE category (
 CREATE TABLE reciepts (
   id SERIAL PRIMARY KEY NOT NULL,
   upload_date VARCHAR(255) NOT NULL,
-  purchase_date VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL,
   category_id INTEGER REFERENCES category(id) ON DELETE CASCADE,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE
 );

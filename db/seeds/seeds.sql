@@ -1,10 +1,10 @@
 INSERT INTO accountants
   (name, company, email, password)
 VALUES
-  ('Ahmed Murad', 'The best in town', 'a.murad@nomail.com', '12345678'),
-  ('Lucas Wilson', 'The best in town', 'l.wilson@nomail.com', '12345678'),
-  ('Amanda Shalansky', 'The best in town', 'a.shalansky@nomail.com', '12345678'),
-  ('Russell McWhae', 'The best in town', 'r.mcwhae@nomail.com', '12345678');
+  ('Ahmed Murad', 'The', 'a.murad@nomail.com', '12345678'),
+  ('Lucas Wilson', 'best', 'l.wilson@nomail.com', '12345678'),
+  ('Amanda Shalansky', 'in', 'a.shalansky@nomail.com', '12345678'),
+  ('Russell McWhae', 'town', 'r.mcwhae@nomail.com', '12345678');
 
 INSERT INTO users
   (name, email, password)
@@ -27,7 +27,7 @@ VALUES
   ('company', 2, 4, 2);
 
   INSERT INTO reciepts
-  (upload_date, purchase_date, category_id, user_id)
+  (upload_date, name, category_id, user_id)
 VALUES
   ('Oct. 12, 2019', 'Oct. 12, 2019', 1, 1),
   ('Oct. 15, 2019', 'Oct. 15, 2019', 2, 1);
