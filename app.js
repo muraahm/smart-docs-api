@@ -9,7 +9,7 @@ var cors = require('cors');
 const app = express();
 server = http.createServer(app)
 const query = require("./db/queries")(db)
-const bodyParser = require('body-Parser')
+const bodyParser = require('body-parser')
 
 app.use(cors());
 
