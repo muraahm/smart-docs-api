@@ -19,7 +19,7 @@ else {
   };
 }
 
-const client = new Pool(dbParams
+const client = new Pool({dbParams, ssl: true}
 );
 
 client
