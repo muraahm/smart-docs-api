@@ -7,23 +7,16 @@ require('dotenv').config({ path: dotEnvFilePath });
 let dbParams = "";
 let ssl = "";
 if (process.env.NODE_ENV === "production") {
-  dbParams = {connectionString: process.env.DATABASE_URL};
+  dbParams = process.env.DATABASE_URL;
   ssl = true
 }
 else {
   //local db params
-  dbParams = {
-    host: process.env.PGHOST,
-    port: process.env.PGPORT,
-    user: process.env.PGUSER,
-    password: process.env.PGPASSWORD,
-    database: process.env.PGDATABASE
-  };
-
+  dbParams = `${process.env.PGUSER}:${process.env.PGPASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}`
   ssl = false
 }
 
-const client = new Pool({dbParams, ssl: ssl}
+const client = new Pool({connectionString: dbParams, ssl: ssl}
 );
 
 client
