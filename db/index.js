@@ -23,7 +23,7 @@ else {
   ssl = false
 }
 
-const client = new Pool({connectionString: dbParams, ssl: ssl}
+const client = new Pool({dbParams, ssl: ssl}
 );
 
 client
