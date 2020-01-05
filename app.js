@@ -10,15 +10,17 @@ const app = express();
 server = http.createServer(app)
 const query = require("./db/queries")(db)
 const bodyParser = require('body-Parser')
+app.use(bodyParser.json());
 
 app.use(cors());
 
 
 const busboy = require('connect-busboy');
+
 const busboyBodyParser = require('busboy-body-parser');
 app.use(busboy());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+
 app.use(busboyBodyParser());
 
 

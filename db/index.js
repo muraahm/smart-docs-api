@@ -1,4 +1,4 @@
-const pg = require("pg");
+const { Pool } = require('pg');
 const ENV = process.env.NODE_ENV || 'development'
 const dotEnvFilePath = __dirname + '/../.env.' + ENV
 require('dotenv').config({ path: dotEnvFilePath });
@@ -19,7 +19,7 @@ else {
   };
 }
 
-const client = new pg.Client(dbParams
+const client = new Pool(dbParams
 );
 
 client
