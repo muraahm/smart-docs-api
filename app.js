@@ -19,7 +19,7 @@ const busboy = require('connect-busboy');
 
 const busboyBodyParser = require('busboy-body-parser');
 app.use(busboy());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(busboyBodyParser());
 
