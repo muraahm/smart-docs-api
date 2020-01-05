@@ -7,7 +7,7 @@ require('dotenv').config({ path: dotEnvFilePath });
 let dbParams = "";
 let ssl = "";
 if (process.env.NODE_ENV === "production") {
-  dbParams = process.env.DATABASE_URL;
+  dbParams = {connectionString: process.env.DATABASE_URL};
   ssl = true
 }
 else {
