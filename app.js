@@ -30,9 +30,11 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 const users = require("./routes/users");
+const accountants = require("./routes/accountants");
 
 
 app.use("/api", users(query));
+app.use("/api", accountants(query));
 
 
 server.listen(PORT, () => console.log("I'm listening on " + PORT))
