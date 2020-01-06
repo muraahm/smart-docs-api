@@ -108,6 +108,28 @@ module.exports = (query) => {
       )
   });
 
+  router.post('/accountant', function (req, res) {
+    var token = req.body.token;
+    if (!token) return res.status(401).send({ auth: false, message: 'No token provided.' });
+    jwt.verify(token, 'secretkey', function (err, decoded) {
+      if (err) return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
+      query.getUsersCategoriesByAccountantEmail(decoded.email)
+        .then(usersAndCategories => {
+          query.getAccountantByEmail(decoded.email)
+            .then(accountant => {
+
+              res.json({
+                id: accountant.id,
+                name: accountant.name,
+                company: accountant.company,
+                email: accountant.email,
+                users: usersAndCategories
+              })
+            })
+        })
+    });
+  });
+
 
 
 
