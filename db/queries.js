@@ -1,7 +1,6 @@
 module.exports = db => ({
 
   createCategory(name, file_id, acct_id, user_id) {
-    console.log(name, file_id, acct_id, user_id)
     return db.query(
       `INSERT INTO "category"
     (name, file_id, acct_id, user_id)
@@ -134,6 +133,16 @@ module.exports = db => ({
       .catch(error => console.log(error));
   },
 
+  getAccountantByEmail(email) {
+    return db.query(
+      `SELECT * FROM accountants WHERE email = $1`, [
+      email
+    ]
+    )
+      .then(({ rows }) => rows[0])
+      .catch(error => console.log(error));
+  },
+
   getUserByEmail(email) {
     return db.query(
       `SELECT * FROM users WHERE email = $1`, [
@@ -149,6 +158,61 @@ module.exports = db => ({
       `SELECT * FROM users`
     )
       .then(({ rows: users }) => users)
+      .catch(error => console.log(error));
+  },
+
+
+  getUsersCategoriesByAccountantEmail(email) {
+    // get the users that gave access to the loggedin accountant
+    return db.query(`
+    SELECT DISTINCT users.id, users.name, users.email FROM category 
+    JOIN users ON users.id = category.user_id
+    JOIN accountants ON accountants.id = category.acct_id
+    WHERE accountants.email = $1;
+    `, [
+      email
+    ]
+    )
+      .then(users => {
+        let newUsers = users.rows
+        // get the user categories and add it to the user object as categories key
+        return db.query(`
+        SELECT category.id AS category_id, category.name AS category_name, users.id AS user_id FROM category
+        JOIN users ON users.id = category.user_id
+        JOIN accountants ON accountants.id = category.acct_id
+        WHERE accountants.email = $1;`, [email])
+          .then(data => {
+            const categories = data.rows;
+            for (let user of newUsers) {
+              user.categories = [];
+              for (let category of categories) {
+                if (category.user_id === user.id) {
+                  user.categories.push(category);
+                }
+              }
+            }
+            return newUsers
+          })
+          .then(users => users)
+      })
+      .then(users => users)
+      .catch(error => console.log(error));
+  },
+
+  createAccountant(name, company, email, password) {
+    return db.query(`
+    INSERT INTO "accountants"
+    (name, company, email, password)
+    VALUES ($1,$2, $3, $4)
+    RETURNING *;
+    `, [
+      name,
+      company,
+      email,
+      password
+    ]
+    )
+      .then(({ rows: accountant }) => accountant)
       .catch(error => console.log(error));
   },
 
