@@ -8,13 +8,13 @@ AWS.config.update({
   secretAccessKey: process.env.AWSSecretAccessKey
 });
 s3 = new AWS.S3();
-
 const jwt = require('jsonwebtoken')
 
 
 
 module.exports = (query) => {
 
+  //register accountant end point
   router.put("/accountant/register", (req, res) => {
     const name = req.body.name
     const company = req.body.accountantCompany
@@ -58,7 +58,7 @@ module.exports = (query) => {
       })
   });
 
-
+  //check accountant and verify hashed password
   const checkAccountantPassword = function (email, password) {
     return (query.getAccountantByEmail(email))
       .then(accountant => {
@@ -73,13 +73,16 @@ module.exports = (query) => {
       .catch(error => console.log(error));
   };
 
+  // login accountant end point
   router.post("/accountant/login", (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
+    //verify password
     checkAccountantPassword(email, password)
       .then(accountant => {
         if (!accountant) { res.send({ meassage: `Try again: Wrong email or password.` }) }
         if (accountant) {
+          //grab all users and categories if have access.
           query.getUsersCategoriesByAccountantEmail(accountant.email)
             .then(usersAndCategories => {
               jwt.sign({
@@ -106,6 +109,7 @@ module.exports = (query) => {
       )
   });
 
+  //get accountant data and passing token if loggedin
   router.post('/accountant', function (req, res) {
     var token = req.body.token;
     if (!token) return res.status(401).send({ auth: false, message: 'No token provided.' });

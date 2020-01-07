@@ -8,7 +8,6 @@ AWS.config.update({
   secretAccessKey: process.env.AWSSecretAccessKey
 });
 s3 = new AWS.S3();
-
 const jwt = require('jsonwebtoken')
 
 
@@ -57,7 +56,6 @@ module.exports = (query) => {
       })
 
   });
-
 
 
   router.put("/users/create/category", (req, res) => {
@@ -134,6 +132,7 @@ module.exports = (query) => {
       })
   });
 
+  //verify password on login
   const checkPassword = function (email, password) {
     return (query.getUserByEmail(email))
       .then(user => {
@@ -149,6 +148,7 @@ module.exports = (query) => {
       .catch(error => console.log('error', error));
   };
 
+  // grabs client data if token valid
   router.post('/user', function (req, res) {
     let token = req.body.token;
     if (!token)
@@ -164,6 +164,7 @@ module.exports = (query) => {
     });
   });
 
+  //login end point
   router.post("/login", (req, res) => {
     const email = req.body.email;
     const password = req.body.password;

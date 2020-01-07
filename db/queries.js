@@ -16,6 +16,7 @@ module.exports = db => ({
       .catch(error => console.log(error));
   },
 
+
   getAccountants() {
     return db.query(
       `SELECT * FROM accountants`
@@ -23,6 +24,7 @@ module.exports = db => ({
       .then(({ rows: categories }) => categories)
       .catch(error => console.log(error));
   },
+
 
   getCategoriesByUserEmail(email) {
     return db.query(
@@ -35,6 +37,7 @@ module.exports = db => ({
       .catch(error => console.log(error));
   },
 
+
   getUserReciepts(categoryId, userId) {
     return db.query(
       `SELECT * FROM reciepts
@@ -44,6 +47,7 @@ module.exports = db => ({
       .catch(error => console.log(error));
 
   },
+
 
   changeAccountant(id, categoryId) {
     return db.query(
@@ -60,6 +64,7 @@ module.exports = db => ({
       .catch(error => console.log(error));
 
   },
+
 
   uploadReciept(uploadDate, photoName, categoryId, userId) {
     return db.query(
@@ -79,6 +84,7 @@ module.exports = db => ({
 
   },
 
+
   getCategoryIdByNameAndUserEmail(name, email) {
     return db.query(
       `SELECT category.id FROM category
@@ -89,6 +95,7 @@ module.exports = db => ({
       .catch(error => console.log(error));
   },
 
+
   getCategoryByNameAndUserID(categoryName, user_id) {
     return db.query(
       `SELECT * FROM category
@@ -98,6 +105,7 @@ module.exports = db => ({
       .catch(error => console.log(error));
   },
 
+
   getCategories() {
     return db.query(
       `SELECT * FROM category`
@@ -106,6 +114,7 @@ module.exports = db => ({
       .catch(error => console.log(error));
   },
 
+
   getFiles() {
     return db.query(
       `SELECT * FROM files`
@@ -113,6 +122,7 @@ module.exports = db => ({
       .then(({ rows: files }) => files)
       .catch(error => console.log(error));
   },
+
 
   getFilesByUserEmail(email) {
     return db.query(
@@ -124,6 +134,7 @@ module.exports = db => ({
       .catch(error => console.log(error));
   },
 
+
   getAcctIdByCompany(company) {
     return db.query(
       `SELECT id FROM accountants WHERE company = $1`, [
@@ -132,6 +143,7 @@ module.exports = db => ({
       .then(({ rows }) => rows[0])
       .catch(error => console.log(error));
   },
+
 
   getAccountantByEmail(email) {
     return db.query(
@@ -143,6 +155,7 @@ module.exports = db => ({
       .catch(error => console.log(error));
   },
 
+
   getUserByEmail(email) {
     return db.query(
       `SELECT * FROM users WHERE email = $1`, [
@@ -152,6 +165,7 @@ module.exports = db => ({
       .then(({ rows }) => rows[0])
       .catch(error => console.log(error));
   },
+
 
   getUsers() {
     return db.query(
@@ -199,6 +213,7 @@ module.exports = db => ({
       .catch(error => console.log(error));
   },
 
+
   createAccountant(name, company, email, password) {
     return db.query(`
     INSERT INTO "accountants"
@@ -217,6 +232,7 @@ module.exports = db => ({
   },
 
 
+
   createUser(name, email, password) {
     return db.query(`
     INSERT INTO "users"
@@ -232,6 +248,7 @@ module.exports = db => ({
       .then(({ rows: user }) => user)
       .catch(error => console.log(error));
   },
+
 
   createUserFile(name, user_id) {
     return db.query(`

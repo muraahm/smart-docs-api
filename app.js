@@ -29,10 +29,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//import and use routes for users and accountants
 const users = require("./routes/users");
 const accountants = require("./routes/accountants");
-
-
 app.use("/api", users(query));
 app.use("/api", accountants(query));
 
