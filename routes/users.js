@@ -88,7 +88,7 @@ module.exports = (query) => {
               }
             }
             else {
-              res.send({ meassage: `Try again: ${categoryName} exists.`});
+              res.send({ meassage: `Try again: ${categoryName} exists.` });
             }
           })
       })
@@ -150,11 +150,12 @@ module.exports = (query) => {
   };
 
   router.post('/user', function (req, res) {
-    var token = req.body.token;
-    if (!token) return
-    res.status(401).send({ auth: false, message: 'No token provided.' });
+    let token = req.body.token;
+    if (!token)
+      return res.status(401).send({ auth: false, message: 'No token provided.' });
     jwt.verify(token, 'secretkey', function (err, decoded) {
-      if (err) return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
+      if (err)
+        return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
       query.getCategoriesByUserEmail(decoded.email)
         .then(categories => {
           const userInfo = { id: decoded.id, name: decoded.name, email: decoded.email }
