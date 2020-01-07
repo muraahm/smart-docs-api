@@ -34,7 +34,7 @@ module.exports = (query) => {
   router.post("/user/reciept/upload", (req, res) => {
     query.uploadReciept(
       req.body.uploadDate,
-      req.body.photoName,
+      req.body.fileName,
       req.body.categoryId,
       req.body.userId)
       .then(reciept => res.json(reciept[0]))
