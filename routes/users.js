@@ -9,8 +9,6 @@ AWS.config.update({
 });
 s3 = new AWS.S3();
 
-let Busboy = require('busboy');
-
 const jwt = require('jsonwebtoken')
 
 
@@ -90,7 +88,7 @@ module.exports = (query) => {
               }
             }
             else {
-              res.send(`${categoryName} is already created :)`);
+              res.send({ meassage: `Try again: ${categoryName} exists.`});
             }
           })
       })
@@ -131,7 +129,7 @@ module.exports = (query) => {
           })
         }
         else {
-          res.send(`${user.email} is already registered :)`);
+          return res.send({ meassage: `Try again: ${user.email} is already registered.` });
         }
       })
   });
@@ -148,12 +146,13 @@ module.exports = (query) => {
           return null;
         }
       })
-      .catch(error => console.log(error));
+      .catch(error => console.log('error', error));
   };
 
   router.post('/user', function (req, res) {
     var token = req.body.token;
-    if (!token) return res.status(401).send({ auth: false, message: 'No token provided.' });
+    if (!token) return
+    res.status(401).send({ auth: false, message: 'No token provided.' });
     jwt.verify(token, 'secretkey', function (err, decoded) {
       if (err) return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
       query.getCategoriesByUserEmail(decoded.email)
@@ -169,7 +168,7 @@ module.exports = (query) => {
     const password = req.body.password;
     checkPassword(email, password)
       .then(user => {
-        if (!user) { res.send(`${email} is not registered :)`) }
+        if (!user) { res.send({ meassage: `Try again: Wrong email or password.` }) }
         if (user) {
           query.getCategoriesByUserEmail(user.email)
             .then(categories => {

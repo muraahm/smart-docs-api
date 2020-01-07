@@ -9,8 +9,6 @@ AWS.config.update({
 });
 s3 = new AWS.S3();
 
-let Busboy = require('busboy');
-
 const jwt = require('jsonwebtoken')
 
 
@@ -55,7 +53,7 @@ module.exports = (query) => {
             })
         }
         else {
-          res.send(`${email} is already registered :)`);
+          res.send({ meassage: `Try again: ${email} is already registered.` });
         }
       })
   });
@@ -80,7 +78,7 @@ module.exports = (query) => {
     const password = req.body.password;
     checkAccountantPassword(email, password)
       .then(accountant => {
-        if (!accountant) { res.send(`${email} is not registered :)`) }
+        if (!accountant) { res.send({ meassage: `Try again: Wrong email or password.` }) }
         if (accountant) {
           query.getUsersCategoriesByAccountantEmail(accountant.email)
             .then(usersAndCategories => {
