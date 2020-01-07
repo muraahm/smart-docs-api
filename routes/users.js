@@ -53,9 +53,8 @@ module.exports = (query) => {
   router.post("/user/change/accountnat", (req, res) => {
     query.getAcctIdByCompany(req.body.accountant)
       .then(id => {
-        console.log(id)
-        query.changeAccountant(id, req.body.categoryId)
-          .then(reciepts => console.log(reciepts)
+        query.changeAccountant(id.id, req.body.categoryId)
+          .then(reciepts => reciepts
           )
       })
 
