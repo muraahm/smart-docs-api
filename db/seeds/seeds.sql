@@ -1,10 +1,10 @@
 INSERT INTO accountants
   (name, company, email, password)
 VALUES
-  ('Ahmed Murad', 'The', 'a.murad@nomail.com', '12345678'),
-  ('Lucas Wilson', 'best', 'l.wilson@nomail.com', '12345678'),
-  ('Amanda Shalansky', 'in', 'a.shalansky@nomail.com', '12345678'),
-  ('Russell McWhae', 'town', 'r.mcwhae@nomail.com', '12345678');
+  ('Ahmed Murad', 'Careful Counting', 'a.murad@nomail.com', '12345678'),
+  ('Lucas Wilson', 'Money Measured', 'l.wilson@nomail.com', '12345678'),
+  ('Amanda Shalansky', 'Penny Pinchers', 'a.shalansky@nomail.com', '12345678'),
+  ('Russell McWhae', 'Target Number', 'r.mcwhae@nomail.com', '12345678');
 
 INSERT INTO users
   (name, email, password)
