@@ -20,7 +20,8 @@
     "express": "~4.16.1",
     "jsonwebtoken": "^8.5.1",
     "morgan": "~1.9.1",
-    "pg": "^7.12.1"
+    "pg": "^7.12.1",
+    "tesseract.js": "^2.0.2"
   },
   "devDependencies": {
     "nodemon": "^1.19.4"
