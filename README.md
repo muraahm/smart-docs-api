@@ -64,7 +64,7 @@ Response
 [
   {
     "id": 1,
-    "name": Ahmed Murad,
+    "name": "Ahmed Murad",
     "company": "Careful Counting",
     "email": "a.murad@nomail.com",
     "users": [
